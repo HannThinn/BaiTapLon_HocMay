@@ -5,6 +5,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import KFold
 from sklearn.metrics import r2_score
 
+# Đọc dữ liệu từ tập dữ liệu test_scores.csv
 data = pd.read_csv("test_scores.csv")
 
 new_cols = ['student_id', 'n_student', 'gender', 'pretest', 'posttest']
@@ -13,12 +14,11 @@ data = data[new_cols]
 
 data.drop(['student_id'], axis=1, inplace=True)
 
-print("Validation lần thứ 1: ")
+print("Data_Train lần thứ 1: ")
 print(data)
 
-
-
-dt_Train, dt_Test = train_test_split(data, test_size=0.3, shuffle=False)
+# Chia tập dữ liệu 70% dùng để huấn luyện, 30% dùng để kiểm tra.
+dt_Train, dt_Test = train_test_split(data, test_size=0.3, shuffle=True)
 
 # Đặt k = 4 vì số dữ liệu train chia hết cho 8
 k = 4;
@@ -26,7 +26,7 @@ k = 4;
 kf = KFold(n_splits=k, random_state=None)
 
 
-def error(y_pred, y):
+def lossFunction(y_pred, y):
     difArray = []
     y_array = np.array(y)
     for i in range(0, len(y_pred)):
@@ -39,32 +39,32 @@ def error(y_pred, y):
 min = 999999999999999999999999
 i = 1;
 
+# Chia tập huấn luyện thành k -1 phần, một phần còn lại dùng để kiểm tra
 for (train_index, validation_index) in kf.split(dt_Train):
-
-    X_train = dt_Train.iloc[train_index, :3]
-    y_train = dt_Train.iloc[train_index, 3]
 
     X_val = dt_Train.iloc[validation_index, :3]
     y_val = dt_Train.iloc[validation_index, 3]
 
+    # Dùng hàm Linear Regression để huấn luyện mô hình.
     lr = LinearRegression()
-
+    X_train = dt_Train.iloc[train_index, :3]
+    y_train = dt_Train.iloc[train_index, 3]
     lr.fit(X_train, y_train)
 
     y_pred_train = lr.predict(X_train)
     y_pred_val = lr.predict(X_val)
 
-    sum_error = error(y_pred_train, y_train) + error(y_pred_val, y_val)
-    print("sum_error lần thứ", i, ": ", sum_error)
+    sum_lossFunc = lossFunction(y_pred_train, y_train) + lossFunction(y_pred_val, y_val)
+    print("sum_error lần thứ", i, ": ", sum_lossFunc)
 
-
-
-    if sum_error < min:
-        min = sum_error
+    # Lấy ra mô hình tốt nhất
+    if sum_lossFunc < min:
+        min = sum_lossFunc
         regr = lr.fit(X_train, y_train)
         last = i
     i = i + 1
 
+# In ra kết quả.
 print("w = ", regr.coef_)
 print("\nw0 = ", regr.intercept_)
 print("\nKết quả tối ưu thu được nằm ở lần thử thứ ", last)
