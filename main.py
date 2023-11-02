@@ -1,12 +1,19 @@
-import numpy as np
-import pandas as pd
+import numpy as np #Tạo mảng
+import pandas as pd #Đọc dữ liệu đầu vào
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import KFold
 from sklearn.metrics import r2_score
+import matplotlib.pyplot as plt
 
 # Đọc dữ liệu từ tập dữ liệu test_scores.csv
 data = pd.read_csv("test_scores.csv")
+
+#Vẽ biểu đồ từ cột 3 và 4 từ dữ liệu
+x1 = data.values[: , 3]
+y1 = data.values[: , 4]
+plt.scatter(x1,y1, marker = "o")
+plt.show()
 
 new_cols = ['student_id', 'n_student', 'gender', 'pretest', 'posttest']
 
