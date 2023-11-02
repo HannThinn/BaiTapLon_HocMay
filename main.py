@@ -38,7 +38,6 @@ def lossFunction(y_pred, y):
 
 min = 999999999999999999999999
 i = 1;
-
 # Chia tập huấn luyện thành k -1 phần, một phần còn lại dùng để kiểm tra
 for (train_index, validation_index) in kf.split(dt_Train):
 
@@ -64,6 +63,8 @@ for (train_index, validation_index) in kf.split(dt_Train):
         last = i
     i = i + 1
 
+    y_predict = regr.predict(dt_Test.iloc[:,:3])
+    y = np.array(dt_Test.iloc[:,3])
 # In ra kết quả.
 print("w = ", regr.coef_)
 print("\nw0 = ", regr.intercept_)
@@ -74,3 +75,7 @@ X_test = dt_Test.iloc[:, :3]
 y_pred_test = regr.predict(X_test)
 
 print("\nCoefficient %.2f" % regr.score(X_test, y_test))
+
+print("Thực tế\t Dự đoán\t\t\t Chênh lệnh")
+for i in range (0, len(y)):
+    print("%.2f" % y[i], "\t",y_predict[i],"\t",abs(y[i]-y_predict[i]))
